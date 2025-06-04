@@ -38,6 +38,9 @@ BUILD_SWAP_ELEMENTS(float)
 BUILD_SWAP_ELEMENTS(vector2)
 BUILD_SWAP_ELEMENTS(vector)
 BUILD_SWAP_ELEMENTS(vector4)
+BUILD_SWAP_ELEMENTS(string)
+BUILD_SWAP_ELEMENTS(matrix)
+BUILD_SWAP_ELEMENTS(matrix3)
 
 #define BUILD_FISHER_YATER(type)\
     type[] fisher_yates(type list[]; int seed)\
@@ -55,6 +58,9 @@ BUILD_FISHER_YATER(float)
 BUILD_FISHER_YATER(vector2)
 BUILD_FISHER_YATER(vector)
 BUILD_FISHER_YATER(vector4)
+BUILD_FISHER_YATER(string)
+BUILD_FISHER_YATER(matrix)
+BUILD_FISHER_YATER(matrix3)
 
 vector spherical_to_cartesian(vector sphere)
 {
