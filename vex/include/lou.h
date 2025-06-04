@@ -15,6 +15,16 @@ int[] range(int x)
     return list;
 }
 
+int[] range(int a; int b)
+{
+    int list[];
+    for(int i = min(a,b); i < max(a,b); i++)
+    {
+        append(list,i);
+    }
+    return list;
+}
+
 #define BUILD_SWAP_ELEMENTS(type)\
     function void swap_elements(type list[]; int a; int b) \
     { \
@@ -54,6 +64,14 @@ vector spherical_to_cartesian(vector sphere)
     cart.z = sphere.x*sin(sphere.y)*sin(sphere.z);
     return cart;
 }
+vector spherical_to_cartesian(float sphere_x; float sphere_y; float sphere_z)
+{
+    vector cart = set(0.0,0.0,0.0);
+    cart.x = sphere_x*sin(sphere_y)*cos(sphere_z);
+    cart.y = sphere_x*cos(sphere_y);
+    cart.z = sphere_x*sin(sphere_y)*sin(sphere_z);
+    return cart;
+}
 
 vector cartesian_to_spherical(vector cart)
 {
@@ -63,6 +81,13 @@ vector cartesian_to_spherical(vector cart)
     sphere.z = atan2(cart.z,cart.x);
     return sphere;
 }
-
+vector cartesian_to_spherical(float cart_x; float cart_y; float cart_z)
+{
+    vector sphere = set(0.0,0.0,0.0);
+    sphere.x = length(set(cart_x,cart_y,cart_z));
+    sphere.y = atan2(length(set(cart_x,cart_z)),cart_y);
+    sphere.z = atan2(cart_z,cart_x);
+    return sphere;
+}
 
 #endif
