@@ -96,4 +96,370 @@ vector cartesian_to_spherical(float cart_x; float cart_y; float cart_z)
     return sphere;
 }
 
+void octree_build(int octree[]; int parent_octree[]; int maxdepth)
+{
+    resize(octree,0);
+    resize(parent_octree,0);
+    for(int i = 0; i < 8; i++)
+    {
+        append(octree,-1);
+        append(parent_octree,-1);
+    }
+    int np = npoints(0);
+    int max_depth = 0;
+    vector bboxmin, bboxmax;
+    getbbox(0,bboxmin,bboxmax);
+    vector bboxcenter = (bboxmin+bboxmax)/2.0;
+    vector lowbbox = bboxcenter-max(bboxmax-bboxmin)*.5;
+    vector highbbox = bboxcenter+max(bboxmax-bboxmin)*.5;
+    for(int i = 0; i < np; i++)
+    {
+        vector pos = point(0,"P",i);
+        int current = 0;
+        int current_depth = 0;
+        vector low = lowbbox;
+        vector high = highbbox;
+        while(1)
+        {
+            int target=0;
+            vector mid = (low+high)/2.0;
+            if(pos.x>mid.x) {target+=1;low.x=mid.x;}
+            else {high.x=mid.x;}
+            if(pos.y>mid.y) {target+=2;low.y=mid.y;}
+            else {high.y=mid.y;}
+            if(pos.z>mid.z) {target+=4;low.z=mid.z;}
+            else {high.z=mid.z;}
+            int cellcontent = octree[current+target];
+            if(cellcontent<-1)
+            {
+                //IF BRANCH KEEPS GOING CONTINUE TO DESCEND
+                current = -cellcontent;
+                current_depth++;
+                max_depth=max(max_depth,current_depth);
+            }
+            else if(cellcontent==-1)
+            {
+                //IF NEITHER POINT NOR FURTHER BRANCH WRITE POINT NUMBER TO LEAF
+                octree[current+target] = i;
+                break;
+            }
+            else
+            {
+                //IF A POINT IS ALREADY IN THE LEAF, BRANCH THE LEAF
+                vector first_pos = point(0,"P",cellcontent);
+                octree[current+target] = -len(octree);
+                int newleaf[];
+                int newparentleaf[];
+                for(int l = 0; l < 8; l++)
+                {
+                    append(newleaf,-1);
+                    append(newparentleaf,current+target);
+                }
+                mid = (low+high)/2.0;
+                target=0;
+                if(first_pos.x>mid.x) {target+=1;}
+                if(first_pos.y>mid.y) {target+=2;}
+                if(first_pos.z>mid.z) {target+=4;}
+                int newtarget=0;
+                if(pos.x>mid.x) {newtarget+=1;}
+                if(pos.y>mid.y) {newtarget+=2;}
+                if(pos.z>mid.z) {newtarget+=4;}
+                if(newtarget!=target)
+                {
+                    //PUT BOTH POINTS IN THE LEAF AND ADD LEAD TO THE BRANCH
+                    newleaf[target]=cellcontent;
+                    newleaf[newtarget]=i;
+                    append(octree,newleaf);
+                    append(parent_octree,newparentleaf);
+                    break;
+                }
+                else
+                {
+                    //IF BOTH POINTS ARE STILL IN THE SAME CELL KEEP GOING DOWN
+                    newleaf[target]=cellcontent;
+                    current=len(octree);
+                    current_depth++;
+                    max_depth=max(max_depth,current_depth);
+                    append(octree,newleaf);
+                    append(parent_octree,newparentleaf);
+                }
+            }
+        }
+    }
+    maxdepth = max_depth;
+    return;
+}
+
+void octree_build(int octree[])
+{
+    resize(octree,0);
+    for(int i = 0; i < 8; i++)
+    {
+        append(octree,-1);
+    }
+    int np = npoints(0);
+    vector bboxmin, bboxmax;
+    getbbox(0,bboxmin,bboxmax);
+    vector bboxcenter = (bboxmin+bboxmax)/2.0;
+    vector lowbbox = bboxcenter-max(bboxmax-bboxmin)*.5;
+    vector highbbox = bboxcenter+max(bboxmax-bboxmin)*.5;
+    for(int i = 0; i < np; i++)
+    {
+        vector pos = point(0,"P",i);
+        int current = 0;
+        vector low = lowbbox;
+        vector high = highbbox;
+        while(1)
+        {
+            int target=0;
+            vector mid = (low+high)/2.0;
+            if(pos.x>mid.x) {target+=1;low.x=mid.x;}
+            else {high.x=mid.x;}
+            if(pos.y>mid.y) {target+=2;low.y=mid.y;}
+            else {high.y=mid.y;}
+            if(pos.z>mid.z) {target+=4;low.z=mid.z;}
+            else {high.z=mid.z;}
+            int cellcontent = octree[current+target];
+            if(cellcontent<-1)
+            {
+                //IF BRANCH KEEPS GOING CONTINUE TO DESCEND
+                current = -cellcontent;
+            }
+            else if(cellcontent==-1)
+            {
+                //IF NEITHER POINT NOR FURTHER BRANCH WRITE POINT NUMBER TO LEAF
+                octree[current+target] = i;
+                break;
+            }
+            else
+            {
+                //IF A POINT IS ALREADY IN THE LEAF, BRANCH THE LEAF
+                vector first_pos = point(0,"P",cellcontent);
+                octree[current+target] = -len(octree);
+                int newleaf[];
+                for(int l = 0; l < 8; l++)
+                {
+                    append(newleaf,-1);
+                }
+                mid = (low+high)/2.0;
+                target=0;
+                if(first_pos.x>mid.x) {target+=1;}
+                if(first_pos.y>mid.y) {target+=2;}
+                if(first_pos.z>mid.z) {target+=4;}
+                int newtarget=0;
+                if(pos.x>mid.x) {newtarget+=1;}
+                if(pos.y>mid.y) {newtarget+=2;}
+                if(pos.z>mid.z) {newtarget+=4;}
+                if(newtarget!=target)
+                {
+                    //PUT BOTH POINTS IN THE LEAF AND ADD LEAD TO THE BRANCH
+                    newleaf[target]=cellcontent;
+                    newleaf[newtarget]=i;
+                    append(octree,newleaf);
+                    break;
+                }
+                else
+                {
+                    //IF BOTH POINTS ARE STILL IN THE SAME CELL KEEP GOING DOWN
+                    newleaf[target]=cellcontent;
+                    current=len(octree);
+                    append(octree,newleaf);
+                }
+            }
+        }
+    }
+    return;
+}
+
+void octree_visualize(int octree[])
+{
+    int saved_current[];
+    int saved_target[];
+    vector saved_low[];
+    vector saved_high[];
+    int current = 0;
+    int target = 0;
+    vector low=set(0.0,0.0,0.0);
+    vector high=set(1.0,1.0,1.0);
+    while(true)
+    {
+        int cellcontent = octree[current+target];
+        vector mid = (low+high)/2.0;
+        vector templow = low;
+        vector temphigh = high;
+        if(target&1){templow.x=mid.x;}else{temphigh.x=mid.x;};
+        if(target&2){templow.y=mid.y;}else{temphigh.y=mid.y;};
+        if(target&4){templow.z=mid.z;}else{temphigh.z=mid.z;};
+        if(cellcontent>=-1)
+        {
+            if(cellcontent!=-1)
+            {
+                //probably best to do nothing here idk
+            }
+            if(target==7)
+            {
+                while(true)
+                {
+                    if(len(saved_current)==0){return;}
+                    current=pop(saved_current);
+                    target=pop(saved_target);
+                    low=pop(saved_low);
+                    high=pop(saved_high);
+                    if(target!=7){target++;break;}
+                }
+            }
+            else
+            {
+                target++;
+            }
+        }
+        else
+        {
+            append(saved_current,current);
+            append(saved_target,target);
+            append(saved_low,low);
+            append(saved_high,high);
+            current=-cellcontent;
+            target=0;
+            low=templow;
+            high=temphigh;
+            vector col = hsvtorgb(len(saved_current)*.115,0.8,1.0);
+            int a = addpoint(0,set(low.x,low.y,low.z));
+            int b = addpoint(0,set(high.x,low.y,low.z));
+            setprimattrib(0,"Cd",addprim(0,"polyline",a,b),col);
+            a = addpoint(0,set(low.x,low.y,low.z));
+            b = addpoint(0,set(low.x,high.y,low.z));
+            setprimattrib(0,"Cd",addprim(0,"polyline",a,b),col);
+            a = addpoint(0,set(low.x,low.y,low.z));
+            b = addpoint(0,set(low.x,low.y,high.z));
+            setprimattrib(0,"Cd",addprim(0,"polyline",a,b),col);
+            a = addpoint(0,set(high.x,high.y,high.z));
+            b = addpoint(0,set(low.x,high.y,high.z));
+            setprimattrib(0,"Cd",addprim(0,"polyline",a,b),col);
+            a = addpoint(0,set(high.x,high.y,high.z));
+            b = addpoint(0,set(high.x,low.y,high.z));
+            setprimattrib(0,"Cd",addprim(0,"polyline",a,b),col);
+            a = addpoint(0,set(high.x,high.y,high.z));
+            b = addpoint(0,set(high.x,high.y,low.z));
+            setprimattrib(0,"Cd",addprim(0,"polyline",a,b),col);
+            a = addpoint(0,set(high.x,high.y,low.z));
+            b = addpoint(0,set(high.x,low.y,low.z));
+            setprimattrib(0,"Cd",addprim(0,"polyline",a,b),col);
+            a = addpoint(0,set(high.x,low.y,high.z));
+            b = addpoint(0,set(high.x,low.y,low.z));
+            setprimattrib(0,"Cd",addprim(0,"polyline",a,b),col);
+            a = addpoint(0,set(low.x,high.y,high.z));
+            b = addpoint(0,set(low.x,high.y,low.z));
+            setprimattrib(0,"Cd",addprim(0,"polyline",a,b),col);
+            a = addpoint(0,set(low.x,high.y,low.z));
+            b = addpoint(0,set(high.x,high.y,low.z));
+            setprimattrib(0,"Cd",addprim(0,"polyline",a,b),col);
+            a = addpoint(0,set(low.x,low.y,high.z));
+            b = addpoint(0,set(low.x,high.y,high.z));
+            setprimattrib(0,"Cd",addprim(0,"polyline",a,b),col);
+            a = addpoint(0,set(low.x,low.y,high.z));
+            b = addpoint(0,set(high.x,low.y,high.z));
+            setprimattrib(0,"Cd",addprim(0,"polyline",a,b),col);
+        }
+    }
+    return;
+}
+
+void octree_visualize(int octree[]; vector bbox_min; vector bbox_max)
+{
+    int saved_current[];
+    int saved_target[];
+    vector saved_low[];
+    vector saved_high[];
+    int current = 0;
+    int target = 0;
+    vector bboxcenter = (bbox_min+bbox_max)/2.0;
+    vector lowbbox = bboxcenter-max(bbox_max-bbox_min)*.5;
+    vector highbbox = bboxcenter+max(bbox_max-bbox_min)*.5;
+    vector low=lowbbox;
+    vector high=highbbox;
+    while(true)
+    {
+        int cellcontent = octree[current+target];
+        vector mid = (low+high)/2.0;
+        vector templow = low;
+        vector temphigh = high;
+        if(target&1){templow.x=mid.x;}else{temphigh.x=mid.x;};
+        if(target&2){templow.y=mid.y;}else{temphigh.y=mid.y;};
+        if(target&4){templow.z=mid.z;}else{temphigh.z=mid.z;};
+        if(cellcontent>=-1)
+        {
+            if(cellcontent!=-1)
+            {
+                //probably best to do nothing here idk
+            }
+            if(target==7)
+            {
+                while(true)
+                {
+                    if(len(saved_current)==0){return;}
+                    current=pop(saved_current);
+                    target=pop(saved_target);
+                    low=pop(saved_low);
+                    high=pop(saved_high);
+                    if(target!=7){target++;break;}
+                }
+            }
+            else
+            {
+                target++;
+            }
+        }
+        else
+        {
+            append(saved_current,current);
+            append(saved_target,target);
+            append(saved_low,low);
+            append(saved_high,high);
+            current=-cellcontent;
+            target=0;
+            low=templow;
+            high=temphigh;
+            vector col = hsvtorgb(len(saved_current)*.115,0.8,1.0);
+            int a = addpoint(0,set(low.x,low.y,low.z));
+            int b = addpoint(0,set(high.x,low.y,low.z));
+            setprimattrib(0,"Cd",addprim(0,"polyline",a,b),col);
+            a = addpoint(0,set(low.x,low.y,low.z));
+            b = addpoint(0,set(low.x,high.y,low.z));
+            setprimattrib(0,"Cd",addprim(0,"polyline",a,b),col);
+            a = addpoint(0,set(low.x,low.y,low.z));
+            b = addpoint(0,set(low.x,low.y,high.z));
+            setprimattrib(0,"Cd",addprim(0,"polyline",a,b),col);
+            a = addpoint(0,set(high.x,high.y,high.z));
+            b = addpoint(0,set(low.x,high.y,high.z));
+            setprimattrib(0,"Cd",addprim(0,"polyline",a,b),col);
+            a = addpoint(0,set(high.x,high.y,high.z));
+            b = addpoint(0,set(high.x,low.y,high.z));
+            setprimattrib(0,"Cd",addprim(0,"polyline",a,b),col);
+            a = addpoint(0,set(high.x,high.y,high.z));
+            b = addpoint(0,set(high.x,high.y,low.z));
+            setprimattrib(0,"Cd",addprim(0,"polyline",a,b),col);
+            a = addpoint(0,set(high.x,high.y,low.z));
+            b = addpoint(0,set(high.x,low.y,low.z));
+            setprimattrib(0,"Cd",addprim(0,"polyline",a,b),col);
+            a = addpoint(0,set(high.x,low.y,high.z));
+            b = addpoint(0,set(high.x,low.y,low.z));
+            setprimattrib(0,"Cd",addprim(0,"polyline",a,b),col);
+            a = addpoint(0,set(low.x,high.y,high.z));
+            b = addpoint(0,set(low.x,high.y,low.z));
+            setprimattrib(0,"Cd",addprim(0,"polyline",a,b),col);
+            a = addpoint(0,set(low.x,high.y,low.z));
+            b = addpoint(0,set(high.x,high.y,low.z));
+            setprimattrib(0,"Cd",addprim(0,"polyline",a,b),col);
+            a = addpoint(0,set(low.x,low.y,high.z));
+            b = addpoint(0,set(low.x,high.y,high.z));
+            setprimattrib(0,"Cd",addprim(0,"polyline",a,b),col);
+            a = addpoint(0,set(low.x,low.y,high.z));
+            b = addpoint(0,set(high.x,low.y,high.z));
+            setprimattrib(0,"Cd",addprim(0,"polyline",a,b),col);
+        }
+    }
+    return;
+}
+
 #endif
