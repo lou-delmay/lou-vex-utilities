@@ -462,4 +462,59 @@ void octree_visualize(int octree[]; vector bbox_min; vector bbox_max)
     return;
 }
 
+void robert_prim_mst(int firstpoint; int seed; string cost_prim_attrib)
+{
+    setpointgroup(0,"prim_mst_start",firstpoint,1);
+    int inforest[];
+    resize(inforest,npoints(0));
+    inforest[firstpoint]=1;
+    int points_to_treat[] = neighbours(0,firstpoint);
+
+    for(int i = 0; i < npoints(0)-1; i++)
+    {
+        //pick a random point from list
+        int ptinlist = sample_discrete(len(points_to_treat),rand(seed,i));
+        //construct a list of neighbours that are in the forest
+        int allpaths[] = pointprims(0,points_to_treat[ptinlist]);
+        int posssible_paths[];
+        foreach(int path; allpaths)
+        {
+            int pts[] = primpoints(0,path);
+            if(inforest[pts[0]]==1 || inforest[pts[1]]==1)
+            {
+                append(posssible_paths,path);
+            }
+        }
+        //find path with lower cost
+        float lowest_cost = 1e12;
+        int lowest_cost_path = len(posssible_paths);
+        foreach(int path; posssible_paths)
+        {
+            float cost = prim(0,cost_prim_attrib,path);
+            if(cost<lowest_cost)
+            {
+                lowest_cost=cost;
+                lowest_cost_path=path;
+            }
+        }
+        //Add current point to the forest
+        inforest[points_to_treat[ptinlist]]=1;
+        int to_append_to_be_treated[];
+        //Construct a list of neighbours that are not in the forest or already in the list to be treated
+        foreach(int nei; neighbours(0,points_to_treat[ptinlist]))
+        {
+            if(! (inforest[nei]==1 || find(points_to_treat,nei)>-1))
+            {
+                append(to_append_to_be_treated,nei);
+            }
+        }
+        //Remove the current point from the list to be treated
+        removeindex(points_to_treat,ptinlist);
+        //Add all neighbours not in the forest to to be treated
+        append(points_to_treat,to_append_to_be_treated);
+        //Set the path as active
+        setprimattrib(0,"active",lowest_cost_path,1);
+    }
+}
+
 #endif
