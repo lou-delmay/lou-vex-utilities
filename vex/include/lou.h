@@ -462,4 +462,32 @@ void octree_visualize(int octree[]; vector bbox_min; vector bbox_max)
     return;
 }
 
+void build_position_mass_octree(int octree[]; vector pos_octree[]; float mass_octree[])
+{
+    for(int i = 0; i < len(octree); i++)
+    {
+        append(mass_octree,0.0);
+        append(pos_octree,set(0.0,0.0,0.0));
+    }
+    for(int i = 0; i < len(octree); i++)
+    {
+        int cellcontent = octree[len(octree)-1-i];
+        if(cellcontent>-1)
+        {
+            mass_octree[len(octree)-1-i] = point(0,"mass",cellcontent);
+            pos_octree[len(octree)-1-i]  = point(0,"P",cellcontent);
+        }
+        if(cellcontent<-1)
+        {
+            for(int j = 0; j < 8; j++)
+            {
+                mass_octree[len(octree)-1-i] += mass_octree[-cellcontent+j];
+                pos_octree[len(octree)-1-i] += mass_octree[-cellcontent+j]*pos_octree[-cellcontent+j];
+            }
+            pos_octree[len(octree)-1-i]/=mass_octree[len(octree)-1-i];
+        }
+    }
+    return;
+}
+
 #endif
