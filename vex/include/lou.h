@@ -181,7 +181,11 @@ vector[] curve_aproximation_least_squares_cubic(vector pos[]; float error_thresh
         }
         if(error>error_threshold)
         {
-            if(len(pos[i:])<3) {break;}
+            if(len(pos[i:])<3)
+            {
+                last_controls=least_squares_cubic(pos[start:]);
+                break;
+            }
             else if(len(pos[i:])==3)
             {
                 append(B,last_controls[1:]);
@@ -225,7 +229,11 @@ vector4[] curve_aproximation_least_squares_cubic(vector4 pos[]; float error_thre
         }
         if(error>error_threshold)
         {
-            if(len(pos[i:])<3) {break;}
+            if(len(pos[i:])<3)
+            {
+                last_controls=least_squares_cubic(pos[start:]);
+                break;
+            }
             else if(len(pos[i:])==3)
             {
                 append(B,last_controls[1:]);
