@@ -25,6 +25,38 @@ int[] range(int a; int b)
     return list;
 }
 
+#define BUILD_POINT_ATTRIB_ARRAY(type)\
+    type[] build_point_attribute_array(int geo; string attribute_name; int pts[]) \
+    { \
+        type attribute_array[]; \
+        for(int i = 0; i < len(pts); i++) \
+        { \
+            type attrib = point(geo,attribute_name,pts[i]); \
+            append(attribute_array,attrib); \
+        } \
+        return attribute_array; \
+    } \
+    type[] build_point_attribute_array(string geo; string attribute_name; int pts[]) \
+    { \
+        type attribute_array[]; \
+        for(int i = 0; i < len(pts); i++) \
+        { \
+            type attrib = point(geo,attribute_name,pts[i]); \
+            append(attribute_array,attrib); \
+        } \
+        return attribute_array; \
+    }
+
+//build build point attribute arrays
+BUILD_POINT_ATTRIB_ARRAY(int)
+BUILD_POINT_ATTRIB_ARRAY(float)
+BUILD_POINT_ATTRIB_ARRAY(vector2)
+BUILD_POINT_ATTRIB_ARRAY(vector)
+BUILD_POINT_ATTRIB_ARRAY(vector4)
+BUILD_POINT_ATTRIB_ARRAY(string)
+BUILD_POINT_ATTRIB_ARRAY(matrix)
+BUILD_POINT_ATTRIB_ARRAY(matrix3)
+
 #define BUILD_SWAP_ELEMENTS(type)\
     function void swap_elements(type list[]; int a; int b) \
     { \
@@ -61,6 +93,161 @@ BUILD_FISHER_YATER(vector4)
 BUILD_FISHER_YATER(string)
 BUILD_FISHER_YATER(matrix)
 BUILD_FISHER_YATER(matrix3)
+
+
+vector[] least_squares_cubic(vector pos[])
+{
+    int lenpos = len(pos);
+    vector controls[];
+    append(controls,pos[0]);
+    append(controls,set(0.0,0.0,0.0));
+    append(controls,set(0.0,0.0,0.0));
+    append(controls,pos[lenpos-1]);
+    
+    for(int j = 0; j < 3; j++)
+    {
+        float m11=0.0,m12=0.0,m22=0.0,d1=0.0,d2=0.0;
+        for(int i = 1; i < lenpos-1; i++)
+        {
+            float t = fit(i,0,lenpos-1,0.0,1.0);
+            float a = 3.0*(1.0-t)*(1.0-t)*t;
+            float b = 3.0*(1.0-t)*t*t;
+            float c = pos[i][j] - (1.0-t)*(1.0-t)*(1.0-t)*pos[0][j] - t*t*t*pos[lenpos-1][j];
+            m11 += a*a;
+            m12 += a*b;
+            m22 += b*b;
+            d1 +=  a*c;
+            d2 +=  b*c;
+        }
+        matrix2 AtAi = set(m22,-m12,-m12,m11);
+        vector2 X = 1.0/(m11*m22-m12*m12)*AtAi*set(d1,d2);
+        controls[1][j] = X.x;
+        controls[2][j] = X.y;
+    }
+    
+    return controls;
+}
+
+vector4[] least_squares_cubic(vector4 pos[])
+{
+    int lenpos = len(pos);
+    vector4 controls[];
+    append(controls,pos[0]);
+    append(controls,set(0.0,0.0,0.0,0.0));
+    append(controls,set(0.0,0.0,0.0,0.0));
+    append(controls,pos[lenpos-1]);
+    
+    for(int j = 0; j < 4; j++)
+    {
+        float m11=0.0,m12=0.0,m22=0.0,d1=0.0,d2=0.0;
+        for(int i = 1; i < lenpos-1; i++)
+        {
+            float t = fit(i,0,lenpos-1,0.0,1.0);
+            float a = 3.0*(1.0-t)*(1.0-t)*t;
+            float b = 3.0*(1.0-t)*t*t;
+            float c = pos[i][j] - (1.0-t)*(1.0-t)*(1.0-t)*pos[0][j] - t*t*t*pos[lenpos-1][j];
+            m11 += a*a;
+            m12 += a*b;
+            m22 += b*b;
+            d1 +=  a*c;
+            d2 +=  b*c;
+        }
+        matrix2 AtAi = set(m22,-m12,-m12,m11);
+        vector2 X = 1.0/(m11*m22-m12*m12)*AtAi*set(d1,d2);
+        controls[1][j] = X.x;
+        controls[2][j] = X.y;
+    }
+    
+    return controls;
+}
+
+vector[] curve_aproximation_least_squares_cubic(vector pos[]; float error_threshold)
+{
+    vector B[];
+    append(B,pos[0]);
+
+    vector last_controls[] = least_squares_cubic(pos[:4]);
+    for(int i = 0; i < 4; i++) {append(last_controls,pos[i]);}
+
+    int start = 0;
+    for(int i = 4; i<len(pos); i++)
+    {
+        vector controls[] = least_squares_cubic(pos[start:i+1]);
+        float error = 0.0;
+        for(int j = start+1; j < i; j++)
+        {
+            vector bez_aprox = spline("bezier",fit(j,start,i,0.0,1.0),controls);
+            error += pow(length(bez_aprox-pos[j]),2.0);
+        }
+        if(error>error_threshold)
+        {
+            if(len(pos[i:])<3) {break;}
+            else if(len(pos[i:])==3)
+            {
+                append(B,last_controls[1:]);
+                last_controls=least_squares_cubic(pos[i-1:i+3]);
+                break;
+            }
+            else
+            {
+                append(B,last_controls[1:]);
+                start = i-1;
+                last_controls = least_squares_cubic(pos[i-1:i+3]);
+                i+=2;
+            }
+        }
+        else
+        {
+            last_controls=controls;
+        }
+    }
+    append(B,last_controls[1:]);
+    return B;
+}
+
+vector4[] curve_aproximation_least_squares_cubic(vector4 pos[]; float error_threshold)
+{
+    vector4 B[];
+    append(B,pos[0]);
+
+    vector4 last_controls[] = least_squares_cubic(pos[:4]);
+    for(int i = 0; i < 4; i++) {append(last_controls,pos[i]);}
+
+    int start = 0;
+    for(int i = 4; i<len(pos); i++)
+    {
+        vector4 controls[] = least_squares_cubic(pos[start:i+1]);
+        float error = 0.0;
+        for(int j = start+1; j < i; j++)
+        {
+            vector4 bez_aprox = spline("bezier",fit(j,start,i,0.0,1.0),controls);
+            error += pow(length(bez_aprox-pos[j]),2.0);
+        }
+        if(error>error_threshold)
+        {
+            if(len(pos[i:])<3) {break;}
+            else if(len(pos[i:])==3)
+            {
+                append(B,last_controls[1:]);
+                last_controls=least_squares_cubic(pos[i-1:i+3]);
+                break;
+            }
+            else
+            {
+                append(B,last_controls[1:]);
+                start = i-1;
+                last_controls = least_squares_cubic(pos[i-1:i+3]);
+                i+=2;
+            }
+        }
+        else
+        {
+            last_controls=controls;
+        }
+    }
+    append(B,last_controls[1:]);
+    return B;
+}
 
 vector spherical_to_cartesian(vector sphere)
 {
