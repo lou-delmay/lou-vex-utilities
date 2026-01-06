@@ -94,6 +94,112 @@ BUILD_FISHER_YATER(string)
 BUILD_FISHER_YATER(matrix)
 BUILD_FISHER_YATER(matrix3)
 
+vector[] pca(vector points[])
+{
+    vector mean = {0, 0, 0};
+    int num_points = len(points);
+    
+    if (num_points == 0) {
+        return { {0,0,0}, {1,0,0}, {0,1,0}, {0,0,1} };
+    }
+    
+    for (int i = 0; i < num_points; i++) {
+        mean += points[i];
+    }
+    mean /= num_points;
+    
+    vector centered[];
+    resize(centered, num_points);
+    
+    for (int i = 0; i < num_points; i++) {
+        centered[i] = points[i] - mean;
+    }
+    
+    matrix3 cov = { {0,0,0}, {0,0,0}, {0,0,0} };
+    
+    for (int i = 0; i < num_points; i++) {
+        vector p = centered[i];
+        cov.xx += p.x * p.x;
+        cov.xy += p.x * p.y;
+        cov.xz += p.x * p.z;
+        cov.yx += p.y * p.x;
+        cov.yy += p.y * p.y;
+        cov.yz += p.y * p.z;
+        cov.zx += p.z * p.x;
+        cov.zy += p.z * p.y;
+        cov.zz += p.z * p.z;
+    }
+    
+    cov /= num_points;
+    
+    matrix3 U;
+    vector S;
+    matrix3 V;
+    
+    svddecomp(cov, U, S, V);
+    
+    vector axis1 = set(V.xx, V.yx, V.zx);
+    vector axis2 = set(V.xy, V.yy, V.zy);
+    vector axis3 = set(V.xz, V.yz, V.zz);
+    
+    if (dot(cross(axis1, axis2), axis3) < 0) {
+        axis3 = -axis3;
+    }
+
+    if (axis1.x < 0 || (axis1.x == 0 && axis1.y < 0) || (axis1.x == 0 && axis1.y == 0 && axis1.z < 0)) 
+        axis1 = -axis1;
+    
+    if (axis2.x < 0 || (axis2.x == 0 && axis2.y < 0) || (axis2.x == 0 && axis2.y == 0 && axis2.z < 0)) 
+        axis2 = -axis2;
+    
+    if (axis3.x < 0 || (axis3.x == 0 && axis3.y < 0) || (axis3.x == 0 && axis3.y == 0 && axis3.z < 0)) 
+        axis3 = -axis3;
+    
+    vector result[];
+    resize(result, 4);
+    result[0] = mean;
+    result[1] = normalize(axis1);
+    result[2] = normalize(axis2);
+    result[3] = normalize(axis3);
+    
+    return result;
+}
+
+//OVERLOADED set()
+vector set(vector2 a; float b)
+{
+    return set(a.x, a.y,b);
+}
+vector set(float a; vector2 b)
+{
+    return set(a, b.x, b.y);
+}
+vector4 set(vector a; float b)
+{
+    return set(a.x,a.y,a.z,b);
+}
+vector4 set(float a; vector b)
+{
+    return set(a,b.x,b.y,b.z);
+}
+vector4 set(vector2 a; vector2 b)
+{
+    return set(a.x,a.y,b.x,b.y);
+}
+
+//Constructors
+vector vector2(float a)
+{
+    return set(a,a,a);
+}
+vector vector(float a)
+{
+    return set(a,a,a);
+}
+vector4 vector4(float a)
+{
+    return set(a,a,a,a);
+}
 
 vector[] least_squares_cubic(vector pos[])
 {
