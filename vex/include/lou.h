@@ -94,7 +94,6 @@ BUILD_FISHER_YATER(string)
 BUILD_FISHER_YATER(matrix)
 BUILD_FISHER_YATER(matrix3)
 
-<<<<<<< Updated upstream
 vector[] pca(vector points[])
 {
     vector mean = {0, 0, 0};
@@ -200,7 +199,8 @@ vector vector(float a)
 vector4 vector4(float a)
 {
     return set(a,a,a,a);
-=======
+}
+
 #define REMOVE_DUPLICATES(type)\
     type[] remove_duplicates(type list[])\
     {\
@@ -243,7 +243,7 @@ int murmurHash12(int srcxs; int srcys) {
     h *= M; h ^= srcx; h *= M; h ^= srcy;
     h ^= shr(h,13); h *= M; h ^= shr(h,15);
     return h;
->>>>>>> Stashed changes
+
 }
 
 vector[] least_squares_cubic(vector pos[])
