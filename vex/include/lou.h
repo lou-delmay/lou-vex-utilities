@@ -94,6 +94,7 @@ BUILD_FISHER_YATER(string)
 BUILD_FISHER_YATER(matrix)
 BUILD_FISHER_YATER(matrix3)
 
+<<<<<<< Updated upstream
 vector[] pca(vector points[])
 {
     vector mean = {0, 0, 0};
@@ -199,6 +200,50 @@ vector vector(float a)
 vector4 vector4(float a)
 {
     return set(a,a,a,a);
+=======
+#define REMOVE_DUPLICATES(type)\
+    type[] remove_duplicates(type list[])\
+    {\
+        type newlist[];\
+        for(int i = 0; i < len(list); i++)\
+        {\
+            int found = 0;\
+            for(int j = 0; j < len(newlist); j++)\
+            {\
+                if(newlist[j]==list[i])\
+                {\
+                    found=1;\
+                    break;\
+                }\
+            }\
+            if(found==0)\
+            {\
+                append(newlist,list[i]);\
+            }\
+        }\
+        return newlist;\
+    }
+
+REMOVE_DUPLICATES(int)
+REMOVE_DUPLICATES(float)
+REMOVE_DUPLICATES(vector2)
+REMOVE_DUPLICATES(vector)
+REMOVE_DUPLICATES(vector4)
+REMOVE_DUPLICATES(string)
+REMOVE_DUPLICATES(matrix)
+REMOVE_DUPLICATES(matrix3)
+//
+
+int murmurHash12(int srcxs; int srcys) {
+    int M = 0x5bd1e995;
+    int h = 1190494759;
+    int srcx = srcxs;
+    int srcy = srcys;
+    srcx *= M;srcy *= M; srcx ^= shr(srcx,24);srcy ^= shr(srcy,24); srcx *= M;srcy *= M;
+    h *= M; h ^= srcx; h *= M; h ^= srcy;
+    h ^= shr(h,13); h *= M; h ^= shr(h,15);
+    return h;
+>>>>>>> Stashed changes
 }
 
 vector[] least_squares_cubic(vector pos[])
@@ -363,6 +408,7 @@ vector4[] curve_aproximation_least_squares_cubic(vector4 pos[]; float error_thre
     return B;
 }
 
+// COORDINATES CONVERSIONS
 vector spherical_to_cartesian(vector sphere)
 {
     vector cart = set(0.0,0.0,0.0);
