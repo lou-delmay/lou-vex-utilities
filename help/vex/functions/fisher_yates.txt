@@ -1,0 +1,6 @@
+fisher_yates
+
+Shuffles an array based on the seed, single threaded
+
+USAGE
+    type[] fisher_yates(type list[], int seed)

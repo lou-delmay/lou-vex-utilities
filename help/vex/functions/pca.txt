@@ -1,0 +1,8 @@
+pca
+
+Performs Principal Component Analysis on 3d vectors.
+Returns an array of 4 vectors : `[ mean , first_axis, second_axis, third_axis ]`
+`mean` is the average position of all vectors and the `axes` are the main components sorted in descending order.
+
+USAGE
+    vector[] pca(vector points[])

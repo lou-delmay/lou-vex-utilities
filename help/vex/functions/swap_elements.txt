@@ -1,0 +1,6 @@
+swap_elements
+
+Return an array with two elements swaped.
+
+USAGE
+    type[] swap_elements(type[] list, int a, int b)

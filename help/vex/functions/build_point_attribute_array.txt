@@ -1,0 +1,7 @@
+build_point_attribute_array
+
+Fetches a point attribute for all ***ptnums*** specified in the `int pts[]` array.
+
+USAGE
+    type[] build_point_attribute_array(int geo, string attribute_name, int pts[])
+    type[] build_point_attribute_array(string geo, string attribute_name, int pts[])

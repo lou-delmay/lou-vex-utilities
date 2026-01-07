@@ -1,0 +1,6 @@
+remove_duplicates
+
+Removes duplicate entries from a list.
+
+USAGE
+    type[] remove_duplicates(type list[])
