@@ -3,4 +3,7 @@ fisher_yates
 Shuffles an array based on the seed, single threaded
 
 USAGE
+{{{
+#!vex
     type[] fisher_yates(type list[], int seed)
+}}}

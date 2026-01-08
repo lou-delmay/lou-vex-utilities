@@ -4,5 +4,8 @@ Returns an array of integers up to x
 or from a to b
 
 USAGE
+{{{
+#!vex
     int[] range(int x)
     int[] range(int a, int b)
+}}}

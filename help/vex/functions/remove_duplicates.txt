@@ -3,4 +3,7 @@ remove_duplicates
 Removes duplicate entries from a list.
 
 USAGE
+{{{
+#!vex
     type[] remove_duplicates(type list[])
+}}}

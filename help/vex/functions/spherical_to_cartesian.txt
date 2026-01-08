@@ -3,5 +3,8 @@ spherical_to_cartesian
 Converts Spherical to Cartesian corrdinates.
 
 USAGE
+{{{
+#!vex
     vector spherical_to_cartesian(vector)
     vector spherical_to_cartesian(float, float, float)
+}}}

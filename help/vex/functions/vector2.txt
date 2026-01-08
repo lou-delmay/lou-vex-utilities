@@ -3,5 +3,8 @@ vector2
 Constructor for vector2
 
 USAGE
+{{{
+#!vex
     vector2 vector2(float a)
     vector2 vector2(float a,float b)
+}}}

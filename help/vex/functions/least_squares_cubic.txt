@@ -3,5 +3,8 @@ least_squares_cubic
 Returns 4 cubic bezier handles that approxiamtes the input curve positions as best as possible.
 
 USAGE
+{{{
+#!vex
     vector[]  least_squares_cubic(vector pos[])
     vector4[] least_squares_cubic(vector4 pos[])
+}}}
