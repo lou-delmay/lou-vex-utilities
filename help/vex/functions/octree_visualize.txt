@@ -1,0 +1,7 @@
+octree_visualize
+
+Creates a visualizer of the levels of branches of the octree, giving it the bbox vectors allows for correct super position of the data and visualizer
+
+USAGE
+    void octree_visualize(int octree[])
+    void octree_visualize(int octree[], vector bbox_min, vector bbox_max)

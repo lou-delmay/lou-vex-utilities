@@ -1,0 +1,6 @@
+build_position_mass_octree
+
+Given an octree of the current geo, it computes the mass and average position of each leaf and branch of the octree. And outputs the result in the given arrays.
+
+USAGE
+    void build_position_mass_octree(int octree[], vector pos_octree[], float mass_octree[])

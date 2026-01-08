@@ -1,0 +1,13 @@
+vector4
+
+Constructor for vector4
+
+USAGE
+    vector4 vector4(float a)
+    vector4 vector4(float a,float b, float c, float d)
+    vector4 vector4(vector2 a, float b, float c)
+    vector4 vector4(float a, vector2 b, float c)
+    vector4 vector4(float a, float b, vector2 c)
+    vector4 vector4(vector2 a, vector2 b)
+    vector4 vector4(vector a, float b)
+    vector4 vector4(float a, vector b)

@@ -1,0 +1,9 @@
+vector
+
+Constructor for vector
+
+USAGE
+    vector vector(float a)
+    vector vector(float a, float b, float c)
+    vector vector(float a, vector2 b)
+    vector vector(vector2 a, float b)

@@ -1,0 +1,7 @@
+robert_prim_mst
+
+Computes a minimum spanning tree starting at the `firstpoint` using prim's algorithm. `seed` is used to randomly choose which point to consider next and the `cost_prim_attrib` is the float prim attribute that represents the cost of an edge.
+The function sets an `active` attribute on the prims that are part of the tree to `1`, and `0`to those that aren't.
+
+USAGE
+    void robert_prim_mst(int firstpoint, int seed, string cost_prim_attrib)

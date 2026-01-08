@@ -1,0 +1,7 @@
+vector2
+
+Constructor for vector2
+
+USAGE
+    vector2 vector2(float a)
+    vector2 vector2(float a,float b)

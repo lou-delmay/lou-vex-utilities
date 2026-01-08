@@ -1,0 +1,8 @@
+octree_build
+
+Builds an octree (or an octree and a parent octree) of the current points in the geo.
+It outputs the result(s) in the specified lists
+
+USAGE
+    void octree_build(int &octree[], int &parent_octree[], int &maxdepth)
+    void octree_build(int &octree[])

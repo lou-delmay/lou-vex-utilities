@@ -1,0 +1,7 @@
+curve_aproximation_least_squares_cubic
+
+Given a series of positions following a rough curve (something that would come out of a sim or noisy data), and an error threshold to control when to disect the curve more. This function returns a cubic bezier curve, in the form of the handles positions.
+
+USAGE
+    vector[]  curve_aproximation_least_squares_cubic(vector pos[], float error_threshold)
+    vector4[] curve_aproximation_least_squares_cubic(vector4 pos[], float error_threshold)

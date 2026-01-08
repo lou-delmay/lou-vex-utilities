@@ -1,0 +1,7 @@
+build_prim_attribute_array
+
+Fetches a prim attribute for all ***primnums*** specified in the `int prs[]` array.
+
+USAGE
+    type[] build_prim_attribute_array(int geo, string attribute_name, int prs[])
+    type[] build_prim_attribute_array(string geo, string attribute_name, int prs[])
