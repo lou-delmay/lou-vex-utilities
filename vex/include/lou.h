@@ -2,7 +2,20 @@
 #define _lou_
 
 #undef PI
+#undef PI_2
+#undef PI_4
+#undef TAU
+
 #define PI 3.141592653589793238462643383279
+#define PI_2 1.570796326794896619231321691640
+#define PI_3 1.047197551196597746154214461093
+#define PI_4 0.785398163397448309615660845820
+#define PI_5 0.628318530717958647692528676656
+#define PI_6 0.523598775598298873077107230547
+#define PI_7 0.448798950512827605494663340469
+#define PI_8 0.392699081698724154807830422910
+#define PI_9 0.349065850398865915384738153698
+#define PI_10 0.314159265358979323846264338328
 #define TAU 6.283185307179586476925286766559
 
 int[] range(int x)
@@ -25,7 +38,7 @@ int[] range(int a; int b)
     return list;
 }
 
-#define BUILD_POINT_ATTRIB_ARRAY(type)\
+#define BUILD_ATTRIB_ARRAY(type)\
     type[] build_point_attribute_array(int geo; string attribute_name; int pts[]) \
     { \
         type attribute_array[]; \
@@ -45,17 +58,37 @@ int[] range(int a; int b)
             append(attribute_array,attrib); \
         } \
         return attribute_array; \
+    } \
+    type[] build_prim_attribute_array(int geo; string attribute_name; int prs[]) \
+    { \
+        type attribute_array[]; \
+        for(int i = 0; i < len(prs); i++) \
+        { \
+            type attrib = prim(geo,attribute_name,prs[i]); \
+            append(attribute_array,attrib); \
+        } \
+        return attribute_array; \
+    } \
+    type[] build_prim_attribute_array(string geo; string attribute_name; int prs[]) \
+    { \
+        type attribute_array[]; \
+        for(int i = 0; i < len(prs); i++) \
+        { \
+            type attrib = prim(geo,attribute_name,prs[i]); \
+            append(attribute_array,attrib); \
+        } \
+        return attribute_array; \
     }
 
 //build build point attribute arrays
-BUILD_POINT_ATTRIB_ARRAY(int)
-BUILD_POINT_ATTRIB_ARRAY(float)
-BUILD_POINT_ATTRIB_ARRAY(vector2)
-BUILD_POINT_ATTRIB_ARRAY(vector)
-BUILD_POINT_ATTRIB_ARRAY(vector4)
-BUILD_POINT_ATTRIB_ARRAY(string)
-BUILD_POINT_ATTRIB_ARRAY(matrix)
-BUILD_POINT_ATTRIB_ARRAY(matrix3)
+BUILD_ATTRIB_ARRAY(int)
+BUILD_ATTRIB_ARRAY(float)
+BUILD_ATTRIB_ARRAY(vector2)
+BUILD_ATTRIB_ARRAY(vector)
+BUILD_ATTRIB_ARRAY(vector4)
+BUILD_ATTRIB_ARRAY(string)
+BUILD_ATTRIB_ARRAY(matrix)
+BUILD_ATTRIB_ARRAY(matrix3)
 
 #define BUILD_SWAP_ELEMENTS(type)\
     function void swap_elements(type list[]; int a; int b) \
@@ -165,40 +198,68 @@ vector[] pca(vector points[])
     return result;
 }
 
-//OVERLOADED set()
-vector set(vector2 a; float b)
+//CONSTRUCTORS
+
+//vector2
+vector2 vector2(float a)
 {
-    return set(a.x, a.y,b);
+    return set(a,a);
 }
-vector set(float a; vector2 b)
+vector2 vector2(float a;float b)
 {
-    return set(a, b.x, b.y);
-}
-vector4 set(vector a; float b)
-{
-    return set(a.x,a.y,a.z,b);
-}
-vector4 set(float a; vector b)
-{
-    return set(a,b.x,b.y,b.z);
-}
-vector4 set(vector2 a; vector2 b)
-{
-    return set(a.x,a.y,b.x,b.y);
+    return set(a,b);
 }
 
-//Constructors
-vector vector2(float a)
-{
-    return set(a,a,a);
-}
+//vector
 vector vector(float a)
 {
     return set(a,a,a);
 }
+vector vector(float a; float b; float c)
+{
+    return set(a,b,c);
+}
+vector vector(float a; vector2 b)
+{
+    return set(a,b.x,b.y);
+}
+vector vector(vector2 a; float b)
+{
+    return set(a.x,a.y,b);
+}
+
+//vector4
 vector4 vector4(float a)
 {
     return set(a,a,a,a);
+}
+vector4 vector4(float a;float b; float c; float d)
+{
+    return set(a,b,c,d);
+}
+vector4 vector4(vector2 a; float b; float c)
+{
+    return set(a.x,a.y,b.c);
+}
+vector4 vector4(float a; vector2 b; float c)
+{
+    return set(a,b.x,b.y,c);
+}
+vector4 vector4(float a; float b; vector2 c)
+{
+    return set(a,b,c.x,c.y);
+}
+vector4 vector4(vector2 a; vector2 b)
+{
+    return set(a.x,a.y,b.x,b.y);
+}
+vector4 vector4(vector a; float b)
+{
+    return set(a.x,a.y,a.z,b);
+}
+vector4 vector4(float a; vector b)
+{
+    return set(a,b.x,b.y,b.z);
 }
 
 #define REMOVE_DUPLICATES(type)\

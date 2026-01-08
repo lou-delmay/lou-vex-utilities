@@ -1,5 +1,8 @@
-# lou-vex-utilities
+# Lou Vex Utilities
 
+Can I get uuuuuuh 👽
+
+# Functions
 Vex functions are snake case, I chose not to divert from this with my functions to avoid janky looking code.
 
 ## range
@@ -28,6 +31,13 @@ For examples using range :
 ```cpp
 vectors positions[] = build_point_attribute_array(0,"P",range(npoints(0)));
 ```
+
+## build_prim_attribute_array
+```cpp
+type[] build_prim_attribute_array(int geo, string attribute_name, int prs[])
+type[] build_prim_attribute_array(string geo, string attribute_name, int prs[])
+```
+Fetches a prim attribute for all ***primnums*** specified in the `int prs[]` array.
 
 ## swap_elements
 
@@ -90,7 +100,7 @@ vector spherical_to_cartesian(vector)
 vector spherical_to_cartesian(float, float, float)
 ```
 
-Converts Spherical to Cartesian corrdinates, duh !
+Converts Spherical to Cartesian corrdinates.
 
 ## cartesian_to_spherical
 
@@ -99,7 +109,7 @@ vector cartesian_to_spherical(vector)
 vector cartesian_to_spherical(float, float, float)
 ```
 
-Converts Cartesian to Spherical corrdinates, duh !
+Converts Cartesian to Spherical corrdinates.
 
 ## octree_build
 ```cpp
@@ -129,4 +139,50 @@ void robert_prim_mst(int firstpoint, int seed, string cost_prim_attrib)
 ```
 Computes a minimum spanning tree starting at the `firstpoint` using prim's algorithm. `seed` is used to randomly choose which point to consider next and the `cost_prim_attrib` is the float prim attribute that represents the cost of an edge.
 
-The function sets and `active` attribute on the prims that are part of the tree to `1`, and the `0`to those that aren't.
+The function sets an `active` attribute on the prims that are part of the tree to `1`, and `0`to those that aren't.
+
+# Quality of Life
+
+## Constructors
+
+Constructors for vectors have been created, to avoid using the highly overloaded set which confuses the compiler when data type isn't obvious 🤦 :
+
+```cpp
+//vector2
+vector2 vector2(float a)
+vector2 vector2(float a,float b)
+
+//vector
+vector vector(float a)
+vector vector(float a, float b, float c)
+vector vector(float a, vector2 b)
+vector vector(vector2 a, float b)
+
+//vector4
+vector4 vector4(float a)
+vector4 vector4(float a,float b, float c, float d)
+vector4 vector4(vector2 a, float b, float c)
+vector4 vector4(float a, vector2 b, float c)
+vector4 vector4(float a, float b, vector2 c)
+vector4 vector4(vector2 a, vector2 b)
+vector4 vector4(vector a, float b)
+vector4 vector4(float a, vector b)
+```
+
+## Constants
+
+Some needlessly long constants even for 64bit floats
+
+```cpp
+#define PI 3.141592653589793238462643383279
+#define PI_2 1.570796326794896619231321691640
+#define PI_3 1.047197551196597746154214461093
+#define PI_4 0.785398163397448309615660845820
+#define PI_5 0.628318530717958647692528676656
+#define PI_6 0.523598775598298873077107230547
+#define PI_7 0.448798950512827605494663340469
+#define PI_8 0.392699081698724154807830422910
+#define PI_9 0.349065850398865915384738153698
+#define PI_10 0.314159265358979323846264338328
+#define TAU 6.283185307179586476925286766559
+```
