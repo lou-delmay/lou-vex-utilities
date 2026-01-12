@@ -239,7 +239,7 @@ vector4 vector4(float a;float b; float c; float d)
 }
 vector4 vector4(vector2 a; float b; float c)
 {
-    return set(a.x,a.y,b.c);
+    return set(a.x,a.y,b,c);
 }
 vector4 vector4(float a; vector2 b; float c)
 {
